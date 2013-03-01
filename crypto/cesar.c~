@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
 	param.key = key;
 	param.mode = mode == 'd';
 	
-	ftransform(in, out, buffer, 1024000, ctransform, &param);	
+	ftransform(in, out, buffer, 1024, ctransform, &param);	
 	
 	free(buffer);
 	

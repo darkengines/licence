@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "crypto.c"
+
+typedef struct {
+	char key;
+	char mode;
+} CesarParams;
+
+
+void ctransform(char* string, unsigned int index, void* cesarParams);
+
+int main(int argc, char** argv) {
+	char* filename = argv[1];
+	char* sample = argv[2];
+	
+	char* buffer = 0;
+	int length = 0;
+	
+	load(sample, &buffer, &length);
+	
+	int* occusSample = (int*)malloc(256*4);
+	sortedOccurences(buffer, length, occusSample, 256);
+	
+	free(buffer);
+	load(filename, &buffer, &length);
+	
+	int* occus = (int*)malloc(256*4);
+	sortedOccurences(buffer, length, occus, 256);
+	int y = 0;
+	while (y < 256) {
+		printf("%d %c\n", y, occusSample[y]);
+		y++;
+	}
+	int c = 256;
+	
+	char* bufferdump = (char*)malloc(length);
+	memcpy(bufferdump, buffer, length);
+	CesarParams param;
+	param.mode = 1;
+	while (c-- > 0) {
+		if (occus[c] >= 'A' && occus[c] <='Z') {
+		int suspect = 'A' + occus[c] - occusSample[254];
+		printf("suspect: %c - %c = %c\n", occus[c], occusSample[254], suspect);
+		getchar();
+		param.key = suspect;
+		stransform(bufferdump, length, ctransform, &param);
+		printf("%s\n", bufferdump);
+		getchar();
+		memcpy(bufferdump, buffer, length);
+		}
+	}
+	
+	int i = 0;
+	while (i < 256) {
+		if (occus[i] >= 'A' && occus[i] <= 'z') {
+			printf("%d %c\n", i, occus[i]);
+		}
+		++i;
+	}
+	
+	free(buffer);
+	free(occus);
+	free(occusSample);
+	free(bufferdump);
+	
+	return 0;
+}
+
+void ctransform(char* string, unsigned int index, void* cesarParams) {
+	char c = string[index];
+	CesarParams* params = (CesarParams*)cesarParams;
+	if (c >= 'A' && c <= 'Z') {
+		if (params->mode == 0) {
+			c = (c + params->key - 2*'A') % 26;
+			c += 'A';
+		}
+		if (params->mode == 1) {
+			c = (c - params->key + 26) % 26;
+			c += 'A';
+		}
+		string[index] = c;
+	}
+}

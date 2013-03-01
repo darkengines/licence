@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "crypto.c"
+
+int main(int argc, char** argv) {
+	
+	char* filename = argv[1];
+	
+	char* buffer = 0;
+	int length = 0;
+	
+	load(filename, &buffer, &length);
+	
+	int* counts = (int*)malloc(256*4);
+	
+	count(buffer, length, counts, 256*4);
+	
+	int i = 'A';
+	while (i <= 'z') {
+		printf("%d %d\n", i-'A', counts[i]);
+		++i;
+	}
+	
+	free(buffer);
+	free(counts);
+	
+	return 0;
+}

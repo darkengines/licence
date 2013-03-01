@@ -4,7 +4,6 @@
 
 typedef struct {
 	char key;
-	char mode;
 } CesarParams;
 
 typedef struct {
@@ -19,7 +18,7 @@ int main(int argc, char** argv) {
 	char *fileIn, *fileOut;
 	
 	mode = argv[1][0];
-	key = argv[2][0];
+	key = atoi(argv[2]);
 	
 	fileIn = argv[3];
 	fileOut = argv[4];
@@ -33,7 +32,6 @@ int main(int argc, char** argv) {
 	
 	CesarParams param;
 	param.key = key;
-	param.mode = mode == 'd';
 	
 	ftransform(in, out, buffer, 1024000, ctransform, &param);	
 	
@@ -44,16 +42,11 @@ int main(int argc, char** argv) {
 
 void ctransform(char* string, unsigned int index, void* cesarParams) {
 	char c = string[index];
-	CesarParams* params = (CesarParams*)cesarParams;
-	if (c >= 'A' && c <= 'Z') {
-		if (params->mode == 0) {
-			c = (c + params->key - 2*'A') % 26;
-			c += 'A';
-		}
-		if (params->mode == 1) {
-			c = (c - params->key + 26) % 26;
-			c += 'A';
-		}
+	if (c != '\n') {
+		CesarParams* params = (CesarParams*)cesarParams;
+		int sum = c + params->key;
+		int sign = sum < 0 ? -1 : 1;
+		c = (sign*sum) % (sign*255);
 		string[index] = c;
 	}
 }

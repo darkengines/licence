@@ -1,0 +1,2 @@
+LDLIBS = -linrimage -lm
+

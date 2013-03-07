@@ -1,0 +1,32 @@
+#! /bin/bash
+
+case $# in
+    0) cat <<EOF
+Inscrute des croix dans une image
+usage: ./croix imagefond imagepoints imagesortie
+EOF
+	exit ;;
+esac
+
+cat > cross55 <<EOF
+0 -2
+0 -1
+0 1
+0 2
+-2 0 
+-1 0
+1 0
+2 0
+EOF
+
+ero  -di $2 -f cross55 > cross
+cat > dump.xv <<EOF
+##!dump(color)
+##!EXIT
+EOF
+
+xvis -nu -xsh dump.xv -ed -tcedr $1 cross
+extg -v 1 color | cnvcol -cv - $3
+
+rm -f cross55 cross dump.xv color
+
